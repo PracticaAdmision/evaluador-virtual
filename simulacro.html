@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulacro de Álgebra</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .pregunta { margin-bottom: 20px; }
+    .resultado { font-weight: bold; margin-top: 20px; display: none; }
+    .timer { font-size: 18px; color: red; margin-bottom: 20px; display: none; }
+    #simulacro { display: none; }
+    #startButton { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Simulacro de Álgebra – Nivel San Marcos</h1>
+  <button id="startButton">Empezar simulacro</button>
+  <div class="timer" id="timer">Tiempo restante: 15:00</div>
+  <form id="simulacro">
+    <div class="pregunta">
+      <p>1. Si x + 2 = 7, ¿cuánto vale x?</p>
+      <label><input type="radio" name="p1" value="A"> A) 5</label><br>
+      <label><input type="radio" name="p1" value="B"> B) 3</label><br>
+      <label><input type="radio" name="p1" value="C"> C) 9</label><br>
+      <label><input type="radio" name="p1" value="D"> D) 4</label><br>
+      <label><input type="radio" name="p1" value="E"> E) 6</label>
+    </div>
+
+    <div class="pregunta">
+      <p>2. Resuelve: (x + 3)(x - 3)</p>
+      <label><input type="radio" name="p2" value="A"> A) x² - 9</label><br>
+      <label><input type="radio" name="p2" value="B"> B) x² + 9</label><br>
+      <label><input type="radio" name="p2" value="C"> C) x² - 6</label><br>
+      <label><input type="radio" name="p2" value="D"> D) x² + 6</label><br>
+      <label><input type="radio" name="p2" value="E"> E) x² - 3</label>
+    </div>
+
+    <div class="pregunta">
+      <p>3. Si 2x - 5 = 9, ¿cuánto vale x?</p>
+      <label><input type="radio" name="p3" value="A"> A) 7</label><br>
+      <label><input type="radio" name="p3" value="B"> B) 5</label><br>
+      <label><input type="radio" name="p3" value="C"> C) 4</label><br>
+      <label><input type="radio" name="p3" value="D"> D) 6</label><br>
+      <label><input type="radio" name="p3" value="E"> E) 8</label>
+    </div>
+
+    <div class="pregunta">
+      <p>4. Factoriza: x² + 5x + 6</p>
+      <label><input type="radio" name="p4" value="A"> A) (x + 2)(x + 3)</label><br>
+      <label><input type="radio" name="p4" value="B"> B) (x + 1)(x + 6)</label><br>
+      <label><input type="radio" name="p4" value="C"> C) (x - 2)(x - 3)</label><br>
+      <label><input type="radio" name="p4" value="D"> D) (x + 6)(x - 1)</label><br>
+      <label><input type="radio" name="p4" value="E"> E) (x + 2)(x - 3)</label>
+    </div>
+
+    <div class="pregunta">
+      <p>5. Resuelve: (x - 4)²</p>
+      <label><input type="radio" name="p5" value="A"> A) x² - 8x + 16</label><br>
+      <label><input type="radio" name="p5" value="B"> B) x² + 16</label><br>
+      <label><input type="radio" name="p5" value="C"> C) x² - 4</label><br>
+      <label><input type="radio" name="p5" value="D"> D) x² - 8x - 16</label><br>
+      <label><input type="radio" name="p5" value="E"> E) x² - 4x + 16</label>
+    </div>
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <div class="resultado" id="resultado"></div>
+
+  <script>
+    const respuestas = {
+      p1: "A",
+      p2: "A",
+      p3: "A",
+      p4: "A",
+      p5: "A"
+    };
+
+    const startButton = document.getElementById("startButton");
+    const timerElement = document.getElementById("timer");
+    const simulacroForm = document.getElementById("simulacro");
+    const resultadoDiv = document.getElementById("resultado");
+
+    let tiempoRestante = 15 * 60;
+    let interval;
+
+    startButton.addEventListener("click", function () {
+      startButton.style.display = "none";
+      simulacroForm.style.display = "block";
+      timerElement.style.display = "block";
+      resultadoDiv.style.display = "none";
+      tiempoRestante = 15 * 60;
+
+      interval = setInterval(() => {
+        const minutos = Math.floor(tiempoRestante / 60);
+        const segundos = tiempoRestante % 60;
+        timerElement.textContent = `Tiempo restante: ${minutos}:${segundos < 10 ? '0' : ''}${segundos}`;
+        if (tiempoRestante <= 0) {
+          clearInterval(interval);
+          simulacroForm.requestSubmit();
+        }
+        tiempoRestante--;
+      }, 1000);
+    });
+
+    simulacroForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      clearInterval(interval);
+
+      let correctas = 0;
+      for (let i = 1; i <= 5; i++) {
+        const respuesta = document.querySelector(`input[name="p${i}"]:checked`);
+        if (respuesta && respuesta.value === respuestas[`p${i}`]) {
+          correctas++;
+        }
+      }
+
+      const puntaje = correctas * 4;
+      simulacroForm.style.display = "none";
+      timerElement.style.display = "none";
+      resultadoDiv.style.display = "block";
+      resultadoDiv.textContent = `Tu puntaje final: ${puntaje} de 20 | Respuestas correctas: ${correctas} de 5`;
+    });
+  </script>
+</body>
+</html>
