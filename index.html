@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,12 +6,15 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     .pregunta { margin-bottom: 20px; }
-    .resultado { font-weight: bold; margin-top: 20px; }
-    .timer { font-size: 18px; color: red; margin-bottom: 20px; }
+    .resultado { font-weight: bold; margin-top: 20px; display: none; }
+    .timer { font-size: 18px; color: red; margin-bottom: 20px; display: none; }
+    #simulacro { display: none; }
+    #startButton { padding: 10px 20px; font-size: 16px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
   <h1>Simulacro de Álgebra – Nivel San Marcos</h1>
+  <button id="startButton">Empezar simulacro</button>
   <div class="timer" id="timer">Tiempo restante: 15:00</div>
   <form id="simulacro">
     <div class="pregunta">
@@ -74,30 +76,50 @@
       p5: "A"
     };
 
+    const startButton = document.getElementById("startButton");
     const timerElement = document.getElementById("timer");
-    let tiempoRestante = 15 * 60;
-    const interval = setInterval(() => {
-      const minutos = Math.floor(tiempoRestante / 60);
-      const segundos = tiempoRestante % 60;
-      timerElement.textContent = `Tiempo restante: ${minutos}:${segundos < 10 ? '0' : ''}${segundos}`;
-      if (tiempoRestante <= 0) {
-        clearInterval(interval);
-        document.getElementById("simulacro").submit();
-      }
-      tiempoRestante--;
-    }, 1000);
+    const simulacroForm = document.getElementById("simulacro");
+    const resultadoDiv = document.getElementById("resultado");
 
-    document.getElementById("simulacro").addEventListener("submit", function(e) {
+    let tiempoRestante = 15 * 60;
+    let interval;
+
+    startButton.addEventListener("click", function () {
+      startButton.style.display = "none";
+      simulacroForm.style.display = "block";
+      timerElement.style.display = "block";
+      resultadoDiv.style.display = "none";
+      tiempoRestante = 15 * 60;
+
+      interval = setInterval(() => {
+        const minutos = Math.floor(tiempoRestante / 60);
+        const segundos = tiempoRestante % 60;
+        timerElement.textContent = `Tiempo restante: ${minutos}:${segundos < 10 ? '0' : ''}${segundos}`;
+        if (tiempoRestante <= 0) {
+          clearInterval(interval);
+          simulacroForm.requestSubmit();
+        }
+        tiempoRestante--;
+      }, 1000);
+    });
+
+    simulacroForm.addEventListener("submit", function (e) {
       e.preventDefault();
       clearInterval(interval);
-      let puntaje = 0;
+
+      let correctas = 0;
       for (let i = 1; i <= 5; i++) {
         const respuesta = document.querySelector(`input[name="p${i}"]:checked`);
         if (respuesta && respuesta.value === respuestas[`p${i}`]) {
-          puntaje++;
+          correctas++;
         }
       }
-      document.getElementById("resultado").textContent = `Tu puntaje es: ${puntaje} de 5`;
+
+      const puntaje = correctas * 4;
+      simulacroForm.style.display = "none";
+      timerElement.style.display = "none";
+      resultadoDiv.style.display = "block";
+      resultadoDiv.textContent = `Tu puntaje final: ${puntaje} de 20 | Respuestas correctas: ${correctas} de 5`;
     });
   </script>
 </body>
